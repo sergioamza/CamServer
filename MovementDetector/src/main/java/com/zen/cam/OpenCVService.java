@@ -1,15 +1,15 @@
-package com.zen.cam.server.service;
+package com.zen.cam;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class OpenCVService {
 			gray.get(0, 0, pixels);
 			BufferedImage bi = new BufferedImage(640, 480, BufferedImage.TYPE_INT_ARGB);
 			ImageIO.write(bi, "jpg", bos);
-			return Base64.encodeBase64String(bos.toByteArray());
+			return Base64.getMimeEncoder().encodeToString(bos.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

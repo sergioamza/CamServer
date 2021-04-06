@@ -4,10 +4,10 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.imageio.ImageIO;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,7 @@ public class CamService {
 	public String getImageAsBase64(int index) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			ImageIO.write((BufferedImage) getImage(index), "jpg", bos);
-			return Base64.encodeBase64String(bos.toByteArray());
+			return Base64.getMimeEncoder().encodeToString(bos.toByteArray());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
