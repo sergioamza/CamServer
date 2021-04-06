@@ -1,4 +1,4 @@
-package com.zen.cam.server.repository;
+package com.zen.cam.server.infraestructure.repository;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -11,9 +11,10 @@ import org.springframework.stereotype.Repository;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
+import com.zen.cam.commons.domain.ICamRepository;
 
 @Repository
-public class CamRepository implements AutoCloseable {
+public class CamRepository implements AutoCloseable,ICamRepository {
 
 	private Logger logger = Logger.getLogger(CamRepository.class.getName());
 

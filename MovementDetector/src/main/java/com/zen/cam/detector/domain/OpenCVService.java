@@ -1,4 +1,4 @@
-package com.zen.cam;
+package com.zen.cam.detector.domain;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -15,13 +15,17 @@ import org.opencv.imgproc.Imgproc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zen.cam.server.repository.CamRepository;
+import com.zen.cam.commons.domain.ICamRepository;
+
+
+
 
 @Service
 public class OpenCVService {
 
 	@Autowired
-	CamRepository camRepository;
+	ICamRepository camRepository;
+	
 	private Logger logger = Logger.getLogger(OpenCVService.class.getName());
 
 	public OpenCVService() {

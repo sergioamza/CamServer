@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.zen.cam</groupId>
-	<artifactId>movement-detector</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>detector</artifactId>
+	<version>0.0.1</version>
 	<name>MovementDetector</name>
 	<description>Movement Detection From Images</description>
 	<properties>
@@ -31,6 +31,11 @@
 	      <groupId>org.openpnp</groupId>
 	      <artifactId>opencv</artifactId>
 	      <version>[4.3.0,)</version>
+	    </dependency>
+	    <dependency>
+	    	<groupId>com.zen.cam</groupId>
+	    	<artifactId>commons</artifactId>
+	    	<version>0.0.1</version>
 	    </dependency>
 	</dependencies>
 

@@ -1,4 +1,4 @@
-package com.zen.cam;
+package com.zen.cam.detector;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

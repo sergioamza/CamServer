@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.zen.cam</groupId>
 	<artifactId>server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>Cam Server</name>
 	<description>Cam Server</description>
 	<properties>
@@ -31,6 +31,11 @@
 	  		<groupId>com.github.sarxos</groupId>
 	  		<artifactId>webcam-capture</artifactId>
 	  		<version>0.3.12</version>
+	  	</dependency>
+	  	<dependency>
+	  		<groupId>com.zen.cam</groupId>
+	  		<artifactId>commons</artifactId>
+	  		<version>0.0.1</version>
 	  	</dependency>
 	</dependencies>
 
