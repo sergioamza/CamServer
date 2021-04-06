@@ -1,6 +1,6 @@
 # CamServer
 
-An for a custom CCTV and DVR
+An idea for a custom CCTV and DVR
 
 ## CamServer
 
