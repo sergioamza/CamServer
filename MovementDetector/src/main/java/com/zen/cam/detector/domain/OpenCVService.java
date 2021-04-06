@@ -38,7 +38,7 @@ public class OpenCVService {
 
 	public String getImageAsBase64(int index) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			byte[] pixels = ((DataBufferByte) ((BufferedImage) camRepository.getImage(0)).getRaster().getDataBuffer())
+			byte[] pixels = ((DataBufferByte) ((BufferedImage) camRepository.getImage(index)).getRaster().getDataBuffer())
 					.getData();
 			logger.info("Pixels: " + pixels.length);
 			Mat orig = new Mat();

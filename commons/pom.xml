@@ -4,4 +4,7 @@
   <artifactId>commons</artifactId>
   <version>0.0.1</version>
   <name>Commons</name>
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
 </project>
