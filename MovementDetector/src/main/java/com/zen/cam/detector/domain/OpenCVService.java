@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zen.cam.commons.domain.ICamRepository;

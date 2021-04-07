@@ -1,4 +1,4 @@
-package com.zen.cam.infraestructure;
+package com.zen.cam.detector.infraestructure;
 
 import java.awt.Image;
 import java.util.logging.Logger;
@@ -15,7 +15,7 @@ public class RemoteCamRepository implements ICamRepository {
 	
 	private final Logger logger = Logger.getLogger(RemoteCamRepository.class.getSimpleName());
 	
-	//@Autowired
+	@Autowired
 	private RestTemplate restTemplate;
 	
 	@Override
@@ -33,14 +33,16 @@ public class RemoteCamRepository implements ICamRepository {
 	
 	@Override
 	public int discover() {
-		// TODO Auto-generated method stub
-		return 0;
+		int res = restTemplate.getForObject("http://localhost:8080/cam/count/", Integer.class);
+		logger.finest("count: " + res);
+		return res;
 	}
 
 	@Override
 	public String getInfo(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String res = restTemplate.getForObject("http://localhost:8080/cam/" + index + "/info", String.class);
+		logger.finest(res);
+		return res;
 	}
 
 }

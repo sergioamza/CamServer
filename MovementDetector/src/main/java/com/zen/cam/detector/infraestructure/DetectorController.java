@@ -1,4 +1,4 @@
-package com.zen.cam.infraestructure;
+package com.zen.cam.detector.infraestructure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
