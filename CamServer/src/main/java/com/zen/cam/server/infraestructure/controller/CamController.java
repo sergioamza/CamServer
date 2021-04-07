@@ -1,4 +1,4 @@
-package com.zen.cam.server.controller;
+package com.zen.cam.server.infraestructure.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -7,26 +7,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zen.cam.server.service.CamService;
+import com.zen.cam.server.domain.ICamService;
 
 @RestController
 @RequestMapping("cam")
 public class CamController {
 
 	@Autowired
-	private CamService camService;
+	private ICamService camService;
 
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getCamImage(@PathVariable("id") int id) {
 		return camService.getImageAsBase64(id);
 	}
 
-	@GetMapping(path = "/{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getCamName(@PathVariable("id") int id) {
 		return camService.getInfo(id);
 	}
 
-	@GetMapping("/count")
+	@GetMapping("count")
 	public int getCamCount() {
 		return camService.discover();
 	}

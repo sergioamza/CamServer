@@ -19,6 +19,7 @@
     <modules>
     	<module>CamServer</module>
     	<module>MovementDetector</module>
+    	<module>commons</module>
     </modules>
     <build>
 		<plugins>

@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CamServer {
+public class CamServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CamServer.class, args);
+		SpringApplication.run(CamServerApplication.class, args);
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.zen.cam;
+package com.zen.cam.detector.domain;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -12,16 +12,19 @@ import javax.imageio.ImageIO;
 
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zen.cam.server.repository.CamRepository;
+import com.zen.cam.commons.domain.ICamRepository;
+
+
+
 
 @Service
 public class OpenCVService {
 
-	@Autowired
-	CamRepository camRepository;
+	
+	private ICamRepository camRepository;
+	
 	private Logger logger = Logger.getLogger(OpenCVService.class.getName());
 
 	public OpenCVService() {
@@ -34,7 +37,7 @@ public class OpenCVService {
 
 	public String getImageAsBase64(int index) {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			byte[] pixels = ((DataBufferByte) ((BufferedImage) camRepository.getImage(0)).getRaster().getDataBuffer())
+			byte[] pixels = ((DataBufferByte) ((BufferedImage) camRepository.getImage(index)).getRaster().getDataBuffer())
 					.getData();
 			logger.info("Pixels: " + pixels.length);
 			Mat orig = new Mat();
