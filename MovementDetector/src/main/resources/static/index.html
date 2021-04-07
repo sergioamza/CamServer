@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<style type="text/css">
+img	{
+	width: 100%;
+	max-width: 960px;
+}
+</style>
+</head>
+<body>
+	<script type="text/javascript">
+	let count = 0;
+	
+
+	fetch(`./cam/count`)
+	.then(x => x.text())
+	.then(data => {
+		count = parseInt(data);
+		for (let i = 0; i< count; i++)    {
+			let img=document.createElement("img");
+			img.id=`img${i}`;
+			document.body.appendChild(img);
+		}
+	});
+
+	
+	function update()	{
+		for (let i = 0; i< count; i++)    {
+			fetch(`./cam/${i}`)
+			.then(x => x.text())
+			.then(data => {
+				let base64 = data;
+				let buffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+				let blob = new Blob([buffer], { type: "image/jpg" });
+				let url = URL.createObjectURL(blob);
+				document.getElementById(`img${i}`).src= url;
+			});
+		}
+	}
+	setInterval(function(){ update(); }, 200);
+</script>
+</body>
+</html>
