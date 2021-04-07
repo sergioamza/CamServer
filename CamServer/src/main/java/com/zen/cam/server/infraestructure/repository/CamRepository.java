@@ -2,10 +2,15 @@ package com.zen.cam.server.infraestructure.repository;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Repository;
 
@@ -74,6 +79,17 @@ public class CamRepository implements AutoCloseable,ICamRepository {
 
 	public String getInfo(int index) {
 		return webcam.get(index).getName() + " " + webcam.get(index).getViewSize() + "@" + webcam.get(index).getFPS();
+	}
+
+	@Override
+	public String getImageAsString(int index) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			ImageIO.write((BufferedImage) getImage(index), "jpg", bos);
+			return Base64.getMimeEncoder().encodeToString(bos.toByteArray());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

@@ -23,8 +23,8 @@ import com.zen.cam.commons.domain.ICamRepository;
 @Service
 public class OpenCVService {
 
-	@Autowired
-	ICamRepository camRepository;
+	
+	private ICamRepository camRepository;
 	
 	private Logger logger = Logger.getLogger(OpenCVService.class.getName());
 

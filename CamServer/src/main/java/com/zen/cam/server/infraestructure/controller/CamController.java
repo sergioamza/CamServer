@@ -16,17 +16,17 @@ public class CamController {
 	@Autowired
 	private ICamService camService;
 
-	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getCamImage(@PathVariable("id") int id) {
 		return camService.getImageAsBase64(id);
 	}
 
-	@GetMapping(path = "/{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getCamName(@PathVariable("id") int id) {
 		return camService.getInfo(id);
 	}
 
-	@GetMapping("/count")
+	@GetMapping("count")
 	public int getCamCount() {
 		return camService.discover();
 	}
