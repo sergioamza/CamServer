@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zen.cam.commons.domain.ICamRepository;
+import com.zen.capture.commons.domain.ICaptureRepository;
 
 @RestController
 @RequestMapping("cam")
 public class DetectorController {
 
 	@Autowired
-	private ICamRepository camRepository;
+	private ICaptureRepository camRepository;
 
 	@GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getImage(@PathVariable("id") int index) {

@@ -1,8 +1,8 @@
-package com.zen.cam.commons.domain;
+package com.zen.capture.commons.domain;
 
 import java.awt.Image;
 
-public interface ICamRepository {
+public interface ICaptureRepository {
 
 	public Image getImage(int index);
 	public String getImageAsString(int index);

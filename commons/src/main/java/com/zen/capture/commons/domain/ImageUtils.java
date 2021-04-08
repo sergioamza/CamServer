@@ -1,4 +1,4 @@
-package com.zen.cam.commons.domain;
+package com.zen.capture.commons.domain;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -48,41 +48,44 @@ public class ImageUtils {
 		return out;
 	}
 
-	public BufferedImage mat2bufferedImage(Mat in) {
-		return mat2bufferedImage(in, BufferedImage.TYPE_3BYTE_BGR);
+	public BufferedImage mat2BufferedImage(Mat in) {
+		return mat2BufferedImage(in, BufferedImage.TYPE_3BYTE_BGR);
 	}
 
-	public BufferedImage mat2bufferedImage(Mat in, int bIType) {
-		BufferedImage out = new BufferedImage(in.width(), in.height(), bIType);
+	public BufferedImage mat2BufferedImage(Mat in, int biType) {
+		BufferedImage out = new BufferedImage(in.width(), in.height(), biType);
 		byte[] data = ((DataBufferByte) out.getRaster().getDataBuffer()).getData();
 		in.get(0, 0, data);
 		return out;
 	}
 
-	public BufferedImage mat2WithContBufferedImage(Mat in) {
-		Mat out = mat2GrayMat(in);
-		return mat2bufferedImage(drawContours(out,mat2ThresMat(out)), BufferedImage.TYPE_BYTE_GRAY);
+	public BufferedImage mat2BufferedImageWithCont(Mat in) {
+		int biType = BufferedImage.TYPE_BYTE_GRAY;
+		if(in.type() == CvType.CV_8UC3)	{
+			biType = BufferedImage.TYPE_3BYTE_BGR;
+		}
+		return mat2BufferedImage(drawContours(in,mat2ThresMat(mat2GrayMat(in))), biType);
 	}
 
 	public BufferedImage mat2GrayBufferedImage(Mat in) {
-		return mat2bufferedImage(mat2GrayMat(in), BufferedImage.TYPE_BYTE_GRAY);
+		return mat2BufferedImage(mat2GrayMat(in), BufferedImage.TYPE_BYTE_GRAY);
 	}
 	
 	public BufferedImage mat2ThresBufferedImage(Mat in) {
-		return mat2bufferedImage(mat2ThresMat(mat2GrayMat(in)), BufferedImage.TYPE_BYTE_GRAY);
+		return mat2BufferedImage(mat2ThresMat(mat2GrayMat(in)), BufferedImage.TYPE_BYTE_GRAY);
 	}
 
 	public Mat mat2GrayMat(Mat in) {
-		Mat outerBox = new Mat(in.size(), CvType.CV_8UC1);
-		Imgproc.cvtColor(in, outerBox, Imgproc.COLOR_BGR2GRAY);
-		return outerBox;
+		Mat proc = new Mat(in.size(), CvType.CV_8UC1);
+		Imgproc.cvtColor(in, proc, Imgproc.COLOR_BGR2GRAY);
+		return proc;
 	}
 
 	public Mat mat2ThresMat(Mat in) {
-		Mat outerBox = new Mat(in.size(), CvType.CV_8UC1);
-		Imgproc.GaussianBlur(in, outerBox, new Size(3, 3), 0);
-		Imgproc.adaptiveThreshold(outerBox, outerBox, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY_INV, 13, 5);
-		return outerBox;
+		Mat proc = new Mat(in.size(), CvType.CV_8UC1);
+		Imgproc.GaussianBlur(in, proc, new Size(3, 3), 0);
+		Imgproc.adaptiveThreshold(proc, proc, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY_INV, 13, 5);
+		return proc;
 	}
 
 	public Mat matDiff(Mat in, Mat sub) {
@@ -92,7 +95,7 @@ public class ImageUtils {
 	}
 
 	public String getImageAsString(BufferedImage image) {
-		return getImageAsString(image, "png");
+		return getImageAsString(image, "jpg");
 	}
 
 	public String getImageAsString(BufferedImage image, String format) {
@@ -109,13 +112,12 @@ public class ImageUtils {
 		List<MatOfPoint> contours = new ArrayList<>();
 		Mat hierarchy = new Mat();
 		Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-		//logger.info("Contours: " + contours.size());
 		contours.removeIf((c) -> !c.isContinuous());
 		return contours;
 	}
 	
 	public Mat drawContours(Mat image,Mat contImage)	{
-		Scalar color = new Scalar(255);
+		Scalar color = new Scalar(255,0,0);
 		Imgproc.drawContours(image, findContours(contImage), -1, color);
 		return image;
 	}
