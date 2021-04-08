@@ -42,7 +42,7 @@ public class OCamRepository implements AutoCloseable, ICamRepository {
 		try {
 			Mat frame = new Mat();
 			if ((now - lastImageTime.get(index)) >= 33 && webcam.get(index).read(frame)) {
-				images.set(index, ImageUtils.getInstance().mat2ThresBufferedImage(frame));
+				images.set(index, ImageUtils.getInstance().mat2WithContBufferedImage(frame));
 			}
 			if (images.get(index) == null) {
 				throw new CvException("Null image");
