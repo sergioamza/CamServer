@@ -2,24 +2,18 @@ package com.zen.cam.server.infraestructure.repository;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-
-import org.springframework.stereotype.Repository;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
 import com.zen.cam.commons.domain.ICamRepository;
+import com.zen.cam.commons.domain.ImageUtils;
 
-@Repository
-public class CamRepository implements AutoCloseable,ICamRepository {
+//@Repository
+public class CamRepository implements AutoCloseable, ICamRepository {
 
 	private Logger logger = Logger.getLogger(CamRepository.class.getName());
 
@@ -83,13 +77,7 @@ public class CamRepository implements AutoCloseable,ICamRepository {
 
 	@Override
 	public String getImageAsString(int index) {
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			ImageIO.write((BufferedImage) getImage(index), "jpg", bos);
-			return Base64.getMimeEncoder().encodeToString(bos.toByteArray());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return ImageUtils.getInstance().getImageAsString((BufferedImage) images.get(index));
 	}
 
 }
