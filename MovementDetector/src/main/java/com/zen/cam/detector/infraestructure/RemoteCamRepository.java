@@ -1,6 +1,7 @@
 package com.zen.cam.detector.infraestructure;
 
 import java.awt.Image;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,12 @@ public class RemoteCamRepository implements ICaptureRepository {
 		String res = restTemplate.getForObject("http://localhost:8080/cam/" + index + "/info", String.class);
 		logger.finest(res);
 		return res;
+	}
+
+	@Override
+	public List<Integer> getCaptureList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
