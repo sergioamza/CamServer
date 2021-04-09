@@ -14,7 +14,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 import org.springframework.stereotype.Service;
 
-import com.zen.cam.commons.domain.ICamRepository;
+import com.zen.capture.commons.domain.ICaptureRepository;
 
 
 
@@ -23,7 +23,7 @@ import com.zen.cam.commons.domain.ICamRepository;
 public class OpenCVService {
 
 	
-	private ICamRepository camRepository;
+	private ICaptureRepository camRepository;
 	
 	private Logger logger = Logger.getLogger(OpenCVService.class.getName());
 
