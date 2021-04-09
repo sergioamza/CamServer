@@ -23,11 +23,11 @@
 				list = JSON.parse(data);
 				for (let i in list) {
 					let img = document.createElement("img");
-					img.id = `img${i}`;
+					img.id = `img${list[i]}`;
 					document.body.appendChild(img);
 				}
 				for (let i in list) {
-					update(i);
+					update(list[i]);
 				}
 			});
 
