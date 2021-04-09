@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -33,6 +34,12 @@ public class CaptureService implements ICaptureService {
 
 	public String getInfo(int id) {
 		return captureRepository.getInfo(id);
+	}
+
+	@Override
+	public List<Integer> getCaptureList() {
+		// TODO Auto-generated method stub
+		return captureRepository.getCaptureList();
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.zen.capture.server.infraestructure.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,11 @@ public class CaptureController {
 		return camService.getInfo(id);
 	}
 
+	@GetMapping(path = "list")
+	public List<Integer> getCamList()	{
+		return camService.getCaptureList();		
+	}
+	
 	@GetMapping("count")
 	public int getCamCount() {
 		return camService.discover();

@@ -102,4 +102,13 @@ public class CaptureRepository implements AutoCloseable, ICaptureRepository {
 	public String getImageAsString(int index) {
 		return ImageUtils.getInstance().getImageAsString((BufferedImage) getImage(index));
 	}
+
+	@Override
+	public List<Integer> getCaptureList() {
+		List<Integer> list = new ArrayList<>();
+		vCaptures.forEach((i,cap) -> {
+			list.add(i);
+		});
+		return list;
+	}
 }
