@@ -1,4 +1,4 @@
-package com.zen.cam.server;
+package com.zen.capture.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
