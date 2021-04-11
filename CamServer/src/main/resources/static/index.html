@@ -35,7 +35,7 @@
 			fetch(`./cam/${i}`)
 				.then(x => x.text())
 				.then(data => {
-					let base64 = data;
+					let base64 = JSON.parse(data).image;
 					let buffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
 					let blob = new Blob([buffer], { type: "image/jpg" });
 					let url = URL.createObjectURL(blob);

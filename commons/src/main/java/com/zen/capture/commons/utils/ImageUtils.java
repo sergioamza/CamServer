@@ -1,13 +1,14 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.utils;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -23,7 +24,7 @@ import org.opencv.imgproc.Imgproc;
 public class ImageUtils {
 
 	private static Logger logger = Logger.getLogger(ImageUtils.class.getName());
-	
+
 	private static ImageUtils instance = null;
 
 	private ImageUtils() {
@@ -61,16 +62,16 @@ public class ImageUtils {
 
 	public BufferedImage mat2BufferedImageWithCont(Mat in) {
 		int biType = BufferedImage.TYPE_BYTE_GRAY;
-		if(in.type() == CvType.CV_8UC3)	{
+		if (in.type() == CvType.CV_8UC3) {
 			biType = BufferedImage.TYPE_3BYTE_BGR;
 		}
-		return mat2BufferedImage(drawContours(in,mat2ThresMat(mat2GrayMat(in))), biType);
+		return mat2BufferedImage(drawContours(in, mat2ThresMat(mat2GrayMat(in))), biType);
 	}
 
 	public BufferedImage mat2GrayBufferedImage(Mat in) {
 		return mat2BufferedImage(mat2GrayMat(in), BufferedImage.TYPE_BYTE_GRAY);
 	}
-	
+
 	public BufferedImage mat2ThresBufferedImage(Mat in) {
 		return mat2BufferedImage(mat2ThresMat(mat2GrayMat(in)), BufferedImage.TYPE_BYTE_GRAY);
 	}
@@ -102,22 +103,34 @@ public class ImageUtils {
 		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 			ImageIO.write(image, format, bos);
 			return Base64.getMimeEncoder().encodeToString(bos.toByteArray());
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException | IllegalArgumentException e) {
+			logger.warning(e.getMessage());
 		}
 		return null;
 	}
 	
-	public List<MatOfPoint> findContours(Mat image)	{
+	public BufferedImage getBufferedImage(String in)	{
+		byte bt[] = Base64.getMimeDecoder().decode(in);
+		InputStream is = new ByteArrayInputStream(bt);		
+		try {
+			return ImageIO.read(is);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<MatOfPoint> findContours(Mat image) {
 		List<MatOfPoint> contours = new ArrayList<>();
 		Mat hierarchy = new Mat();
 		Imgproc.findContours(image, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 		contours.removeIf((c) -> !c.isContinuous());
 		return contours;
 	}
-	
-	public Mat drawContours(Mat image,Mat contImage)	{
-		Scalar color = new Scalar(255,0,0);
+
+	public Mat drawContours(Mat image, Mat contImage) {
+		Scalar color = new Scalar(255, 0, 0);
 		Imgproc.drawContours(image, findContours(contImage), -1, color);
 		return image;
 	}
