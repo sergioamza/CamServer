@@ -2,10 +2,13 @@ package com.zen.capture.server.infraestructure.repository;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import org.opencv.core.CvException;
@@ -15,47 +18,65 @@ import org.opencv.videoio.Videoio;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import com.zen.capture.commons.domain.Capture;
+import com.zen.capture.commons.domain.BufferedCaptures;
+import com.zen.capture.commons.domain.BufferedImageCapture;
+import com.zen.capture.commons.domain.ICapture;
 import com.zen.capture.commons.domain.ICaptureRepository;
-import com.zen.capture.commons.domain.ImageUtils;
+import com.zen.capture.commons.utils.ImageUtils;
+import com.zen.capture.commons.utils.StringUtils;
 
 @Primary
 @Repository
-public class CaptureRepository implements AutoCloseable, ICaptureRepository {
+public class CaptureRepository implements AutoCloseable, ICaptureRepository<BufferedImage> {
 
 	private Logger logger = Logger.getLogger(CaptureRepository.class.getName());
 
-	private Map<Integer, Capture> vCaptures;
+	private Map<Integer, BufferedCaptures> captures;
+
+	private Map<String, Integer> props = new HashMap<String, Integer>();
+
+	private final int STATES = 3;
 
 	private CaptureRepository() {
 		init();
 	}
 
-	public Image getImage(int index) {
-		Capture vCapture = vCaptures.containsKey(index) ? vCaptures.get(index): new Capture(index);
+	public Optional<ICapture<BufferedImage>> getCapture(int index) {
 		long now = System.currentTimeMillis();
 		try {
+			if (!captures.containsKey(index))
+				throw new NullPointerException("No such device");
 			Mat image = new Mat();
-			if ((now - vCapture.getLastCaptureTime()) >= 50 && vCapture.getvCapture().read(image)) {
-				vCapture.setLastCaptureTime(now);
-				vCapture.setLastImage(vCapture.getImage());
-				vCapture.setImage(ImageUtils.getInstance().mat2BufferedImage(image));
+			if ((now - captures.get(index).getCapture().getCaptureTime()) >= 50
+					&& (captures.get(index).getvCapture().isOpened() || captures.get(index).getvCapture().open(index))
+					&& captures.get(index).getvCapture().read(image) && image.width() > 0 && image.height() > 0) {
+				captures.get(index).setCapture(ImageUtils.getInstance().mat2BufferedImage(image));
 			}
-			if (vCapture.getImage() == null) {
+			if (captures.get(index).getCapture().getImage() == null) {
 				throw new CvException("Null image");
 			}
-		} catch (IndexOutOfBoundsException | CvException e) {
-			logger.severe(e.getMessage());
+		} catch (NullPointerException e) {
 			Image im = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
 			im.getGraphics().drawString(e.getMessage(), 0, 240);
-			return im;
+			ICapture<BufferedImage> capture = new BufferedImageCapture();
+			capture.setCaptureTime(now);
+			capture.setImage((BufferedImage) im);
+			return Optional.of(capture);
+		} catch (IndexOutOfBoundsException | CvException e) {
+			logger.warning("TimeElapsed: " + (now - captures.get(index).getCapture().getCaptureTime()));
+			logger.warning(e.getMessage());
+			logger.info("Intance [" + index + "] " + captures.get(index).getvCapture().hashCode());
+			Image im = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
+			im.getGraphics().drawString(e.getMessage(), 0, 240);
+			captures.get(index).getCapture().setImage((BufferedImage) im);
 		}
-		return vCapture.getImage();
+		return Optional.of(captures.get(index).getCapture());
 	}
 
 	private void init() {
 		try {
 			nu.pattern.OpenCV.loadShared();
+			setProps();
 			discover();
 		} catch (CvException e) {
 			logger.severe(e.getMessage());
@@ -64,49 +85,86 @@ public class CaptureRepository implements AutoCloseable, ICaptureRepository {
 
 	@Override
 	public void close() throws Exception {
-		vCaptures.forEach((i,cap) -> cap.getvCapture().release());
+		captures.forEach((i, cap) -> cap.getvCapture().release());
 	}
 
 	public int discover() {
 		Mat frame = new Mat();
-		if (vCaptures != null && !vCaptures.isEmpty()) {
-			vCaptures.forEach((i,cap) -> cap.getvCapture().release());
-		}	else	{
-			vCaptures = new HashMap<>();			
+		if (captures != null && !captures.isEmpty()) {
+			captures.forEach((i, cap) -> cap.getvCapture().release());
+		} else {
+			captures = new HashMap<>();
 		}
+
 		for (int i = 0; i < 30; i++) {
 			VideoCapture vCapture = new VideoCapture(i);
-			if (vCapture.isOpened() && vCapture.read(frame) && frame.width() > 0 && frame.height() > 0) {
-				vCaptures.put(i, new Capture(vCapture));
+			if (vCapture.isOpened())
+				vCapture.release();
+			vCapture.set(Videoio.CAP_PROP_FRAME_WIDTH, 1280.0);
+			vCapture.set(Videoio.CAP_PROP_FRAME_HEIGHT, 960.0);
+			vCapture.set(Videoio.CAP_PROP_AUTO_EXPOSURE, 1.0);
+			if ((vCapture.isOpened() || vCapture.open(i)) && vCapture.read(frame) && frame.width() > 0
+					&& frame.height() > 0) {
+				captures.put(i, new BufferedCaptures(vCapture, STATES));
+				logger.info("Cam " + i + " " + vCapture.get(Videoio.CAP_PROP_FRAME_WIDTH) + "x"
+						+ vCapture.get(Videoio.CAP_PROP_FRAME_HEIGHT) + "@" + vCapture.get(Videoio.CAP_PROP_FPS));
 			} else {
 				vCapture.release();
-				vCaptures.remove(i);
+				captures.remove(i);
 			}
 		}
-		/*vCaptures.forEach(c -> c.setExceptionMode(true));
-		vCaptures.forEach(c -> logger.info("Brightness " + c.get(Videoio.CAP_PROP_BRIGHTNESS)));
-		vCaptures.forEach(c -> logger.info("WhiteBalance " + c.get(Videoio.CAP_PROP_AUTO_WB)));
-		vCaptures.forEach(c -> logger.info("Exposure " + c.get(Videoio.CAP_PROP_EXPOSURE)));
-		vCaptures.forEach(c -> logger.info("Gain " + c.get(Videoio.CAP_PROP_GAIN)));
-		vCaptures.forEach(c -> logger.info("Contrast " + c.get(Videoio.CAP_PROP_CONTRAST)));
-		vCaptures.forEach(c -> logger.info("Contrast " + c.set(Videoio.CAP_PROP_CONTRAST, 100.0)));
-		vCaptures.forEach(c -> logger.info("Contrast " + c.get(Videoio.CAP_PROP_CONTRAST)));*/
-		return vCaptures.size();
+		return captures.size();
 	}
 
-	public String getInfo(int index) {
-		return "";/*vCaptures.get(index).getBackendName() + " " + vCaptures.get(index).getExceptionMode() + "@"
-				+ vCaptures.get(index).getNativeObjAddr();*/
+	public Map<String, Object> getInfo(int index) {
+		Map<String, Object> cProps = new HashMap<>();
+		props.forEach((k, ve) -> {
+			double va = captures.get(index).getvCapture().get(ve);
+			if (va != -1.0) {
+				cProps.put(k,va);
+			}
+		});
+		return cProps;
 	}
 
-	public String getImageAsString(int index) {
-		return ImageUtils.getInstance().getImageAsString((BufferedImage) getImage(index));
+	public boolean setProp(int idx, String prop, String value) {
+		return captures.get(idx).getvCapture().set((int) props.get(prop), Double.valueOf((String) value));
+	}
+
+	@Override
+	public Map<String, Map<String, Object>> getInfo() {
+		Map<String, Map<String,Object>> info = new HashMap<>();
+		captures.forEach((idx, cap) -> {
+			info.put("" + idx, getInfo(idx));
+		});
+		return info;
+	}
+
+	private void setProps() {
+		try {
+			Videoio v = Videoio.class.newInstance();
+			List<Field> fields = Arrays.asList(v.getClass().getFields());
+			fields.stream()
+					.filter(x -> {
+						return x.getName().toLowerCase().trim().startsWith("CAP".toLowerCase());
+					})
+					.forEach((x) -> {
+						try {
+							props.put(StringUtils.getInstance().snakeCaseToUpperCamelCase(x.getName()), x.getInt(x));
+						} catch (IllegalArgumentException | IllegalAccessException e) {
+							logger.info(e.getMessage());
+							e.printStackTrace();
+						}
+					});
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
 	public List<Integer> getCaptureList() {
 		List<Integer> list = new ArrayList<>();
-		vCaptures.forEach((i,cap) -> {
+		captures.forEach((i, cap) -> {
 			list.add(i);
 		});
 		return list;
