@@ -5,18 +5,18 @@ import java.awt.image.BufferedImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zen.capture.commons.domain.ICaptureRepository;
+import com.zen.capture.commons.domain.models.ICaptureRepository;
 import com.zen.capture.commons.domain.service.ACaptureService;
 import com.zen.capture.commons.utils.ImageUtils;
 
 @Service
-public class CaptureService extends ACaptureService<BufferedImage> {
+public class BufferedImageCaptureService extends ACaptureService<BufferedImage,String> {
 
 	@Autowired
-	private ICaptureRepository<BufferedImage> captureRepository;
+	private ICaptureRepository<BufferedImage,String> captureRepository;
 
 	@Override
-	protected ICaptureRepository<BufferedImage> getRepository() {
+	protected ICaptureRepository<BufferedImage,String> getRepository() {
 		return captureRepository;
 	}
 

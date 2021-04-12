@@ -1,13 +1,12 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.domain.models;
 
 import java.util.List;
 import java.util.Map;
 
 
-public interface ICaptureService<T> {
+public interface ICaptureService<T,U> {
 
-	public ICapture<T> getCapture(int index);
-	public ICapture<String> getCaptureString(int index);
+	public ICapture<U> getCapture(int index);
 	public int discover();
 	public Map<String, Object> getInfo(int id);
 	public Map<String, Map<String, Object>> getInfo();

@@ -1,13 +1,11 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.domain.models;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.opencv.videoio.VideoCapture;
-
-public abstract class ACaptures<T,U> implements Serializable, ICaptures<T,U> {
+public abstract class ACaptures<D, T, U> implements Serializable, ICaptures<D, T, U> {
 
 	/**
 	 * 
@@ -16,35 +14,35 @@ public abstract class ACaptures<T,U> implements Serializable, ICaptures<T,U> {
 
 	private static final Logger logger = Logger.getLogger(ACaptures.class.getName());
 
-	private VideoCapture vCapture;
+	private ICaptureDevice<D, T> captureDevice;
 	private ICapture<U> image;
 	private Map<Integer, ICapture<T>> captures;
 	private int states;
 
 	public ACaptures(int index, int states) {
-		vCapture = new VideoCapture(index);
+		captureDevice = captureDevice.getDefaultDevice("" + index);
 		captures = new HashMap<Integer, ICapture<T>>(states);
 		this.states = states;
-		this.image = getDefaultInstance();
+		this.image = getUTypeDefault();
 	}
 
-	public ACaptures(VideoCapture vCapture, int states) {
-		this.vCapture = vCapture;
+	public ACaptures(ICaptureDevice<D, T> vCapture, int states) {
+		this.captureDevice = vCapture;
 		captures = new HashMap<Integer, ICapture<T>>(states);
 		this.states = states;
-		this.image = getDefaultInstance();
+		this.image = getUTypeDefault();
 	}
 
-	public VideoCapture getvCapture() {
-		return vCapture;
+	public ICaptureDevice<D, T> getvCapture() {
+		return captureDevice;
 	}
 
-	public void setvCapture(VideoCapture vCapture) {
-		this.vCapture = vCapture;
+	public void setvCapture(ICaptureDevice<D, T> vCapture) {
+		this.captureDevice = vCapture;
 	}
 
-	public ICapture<T> getCapture() {
-		return getCapture(0);
+	public ICapture<U> getCapture() {
+		return image;
 	}
 
 	public ICapture<T> getCapture(int state) {
@@ -53,10 +51,10 @@ public abstract class ACaptures<T,U> implements Serializable, ICaptures<T,U> {
 				if (captures.get(i) == null)
 					throw new NullPointerException("Uninitialized");
 			} catch (NullPointerException e) {
-				captures.put(i, getDefaulType());
+				captures.put(i, getTTypeDefault());
 				logger.warning(e.getMessage());
 				logger.fine("Capture: " + i);
-			}			
+			}
 		}
 		return captures.get(state);
 	}
@@ -72,12 +70,13 @@ public abstract class ACaptures<T,U> implements Serializable, ICaptures<T,U> {
 		getCapture(0).setImage(image);
 		getCapture(0).setCaptureTime(now);
 		this.image.setCaptureTime(now);
-		this.image.setImage(toBufferedImage(image));
+		this.image.setImage(fromTtoU(image));
 	}
 	
-	public ICapture<U> getImageCapture()	{
-		return this.image;
-	}
-	
-	public abstract ICapture<U> getDefaultInstance();
+	protected abstract U fromTtoU(T image);
+
+	protected abstract ICapture<T> getTTypeDefault();
+
+	protected abstract ICapture<U> getUTypeDefault();
+
 }

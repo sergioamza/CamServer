@@ -1,6 +1,8 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.domain.models.impl;
 
 import org.opencv.core.Mat;
+
+import com.zen.capture.commons.domain.models.ICapture;
 
 public class MatCapture implements ICapture<Mat> {
 	

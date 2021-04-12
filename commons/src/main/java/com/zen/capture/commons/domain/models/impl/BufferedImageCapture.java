@@ -1,6 +1,8 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.domain.models.impl;
 
 import java.awt.image.BufferedImage;
+
+import com.zen.capture.commons.domain.models.ICapture;
 
 public class BufferedImageCapture implements ICapture<BufferedImage> {
 

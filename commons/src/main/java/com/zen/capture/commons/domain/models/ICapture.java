@@ -1,4 +1,4 @@
-package com.zen.capture.commons.domain;
+package com.zen.capture.commons.domain.models;
 
 public interface ICapture<T> {
 
