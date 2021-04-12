@@ -1,6 +1,5 @@
 package com.zen.cam.detector.infraestructure;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -11,19 +10,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zen.capture.commons.domain.ICapture;
-import com.zen.capture.commons.domain.ICaptureService;
+import com.zen.capture.commons.domain.models.ICapture;
+import com.zen.capture.commons.domain.models.ICaptureService;
 
 @RestController
 @RequestMapping("cam")
 public class DetectorController {
 
 	@Autowired
-	private ICaptureService<BufferedImage> captureService;
+	private ICaptureService<String, String> captureService;
 
 	@GetMapping(path = "{id}")
 	public ICapture<String> getCamImage(@PathVariable("id") int id) {
-		return captureService.getCaptureString(id);
+		return captureService.getCapture(id);
 	}
 
 	@GetMapping(path = "{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)

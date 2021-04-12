@@ -1,6 +1,5 @@
 package com.zen.cam.detector.infraestructure;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,14 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import com.zen.capture.commons.domain.BufferedImageCapture;
-import com.zen.capture.commons.domain.ICapture;
-import com.zen.capture.commons.domain.ICaptureRepository;
-import com.zen.capture.commons.domain.StringCapture;
-import com.zen.capture.commons.utils.ImageUtils;
+import com.zen.capture.commons.domain.models.ICapture;
+import com.zen.capture.commons.domain.models.ICaptureRepository;
+import com.zen.capture.commons.domain.models.impl.StringCapture;
 
 @Repository
-public class RemoteCamRepository implements ICaptureRepository<BufferedImage> {
+public class RemoteCamRepository implements ICaptureRepository<String, String> {
 
 	private final Logger logger = Logger.getLogger(RemoteCamRepository.class.getSimpleName());
 
@@ -25,12 +22,9 @@ public class RemoteCamRepository implements ICaptureRepository<BufferedImage> {
 	private RestTemplate restTemplate;
 
 	@Override
-	public Optional<ICapture<BufferedImage>> getCapture(int index) {
+	public Optional<ICapture<String>> getCapture(int index) {
 		StringCapture res = restTemplate.getForObject("http://localhost:8080/cam/" + index, StringCapture.class);
-		ICapture<BufferedImage> capture = new BufferedImageCapture();
-		capture.setCaptureTime(res.getCaptureTime());
-		capture.setImage(ImageUtils.getInstance().getBufferedImage(res.getImage()));
-		return Optional.of(capture);
+		return Optional.of(res);
 	}
 
 	public String getImageAsString(int index) {
