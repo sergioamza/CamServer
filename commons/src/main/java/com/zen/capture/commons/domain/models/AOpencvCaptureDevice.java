@@ -1,4 +1,4 @@
-package com.zen.capture.commons.domain.models.impl;
+package com.zen.capture.commons.domain.models;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -11,7 +11,6 @@ import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
-import com.zen.capture.commons.domain.models.ICaptureDevice;
 import com.zen.capture.commons.utils.StringUtils;
 
 /**
@@ -20,18 +19,26 @@ import com.zen.capture.commons.utils.StringUtils;
  *
  * @param <T> Output format
  */
-public abstract class OpencvCaptureDevice<T> implements ICaptureDevice<VideoCapture, T> {
+public abstract class AOpencvCaptureDevice<T> implements ICaptureDevice<VideoCapture, T> {
 
-	private static Logger logger = Logger.getLogger(OpencvCaptureDevice.class.getName());
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+	
+	private static Logger logger = Logger.getLogger(AOpencvCaptureDevice.class.getName());
 
 	protected static Map<String, Integer> props = new HashMap<String, Integer>();
 	{
 		setProps();
 	}
+	
+	private long lastGrabTime;
+	
+	private final long MIN_GRAB_PERIOD = 100;
 
 	protected VideoCapture captureDevice;
 
-	public OpencvCaptureDevice() {
+	public AOpencvCaptureDevice() {
 		super();
 	}
 
@@ -44,7 +51,7 @@ public abstract class OpencvCaptureDevice<T> implements ICaptureDevice<VideoCapt
 	 *           cv::CAP_DSHOW or cv::CAP_MSMF or cv::CAP_V4L.SEE:
 	 *           cv::VideoCaptureAPIs
 	 */
-	public OpencvCaptureDevice(int id) {
+	public AOpencvCaptureDevice(int id) {
 		captureDevice = new VideoCapture(id);
 		getCaptureDevice().set(Videoio.CAP_PROP_FRAME_WIDTH, 1280.0);
 		getCaptureDevice().set(Videoio.CAP_PROP_FRAME_HEIGHT, 960.0);
@@ -66,7 +73,7 @@ public abstract class OpencvCaptureDevice<T> implements ICaptureDevice<VideoCapt
 	 *                 cv::CAP_FFMPEG or cv::CAP_IMAGES or cv::CAP_DSHOW.
 	 * 
 	 */
-	public OpencvCaptureDevice(String filename) {
+	public AOpencvCaptureDevice(String filename) {
 		captureDevice = new VideoCapture(filename);
 	}
 
@@ -81,7 +88,7 @@ public abstract class OpencvCaptureDevice<T> implements ICaptureDevice<VideoCapt
 	
 	@Override
 	public boolean open(int id)	{
-		return captureDevice.open(0);
+		return captureDevice.open(id);
 	}
 	
 	@Override
@@ -105,7 +112,11 @@ public abstract class OpencvCaptureDevice<T> implements ICaptureDevice<VideoCapt
 
 	private Mat getMatCapture() {
 		Mat image = new Mat();
-		captureDevice.read(image);
+		long now =  System.currentTimeMillis();
+		if((now - lastGrabTime) < MIN_GRAB_PERIOD)	return null; 	
+		lastGrabTime = now;
+		if(! captureDevice.grab()) return null;
+		captureDevice.retrieve(image);
 		return image;
 	}
 

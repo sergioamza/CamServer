@@ -6,7 +6,9 @@ import java.util.Optional;
 
 public interface ICaptureRepository<T,U> {
 
+	public Optional<ICapture<T>> getCapture(int index, int state);
 	public Optional<ICapture<U>> getCapture(int index);
+	public void updateCapture(int index);
 	public int discover();
 	public Map<String, Object> getInfo(int index);
 	public List<Integer> getCaptureList();

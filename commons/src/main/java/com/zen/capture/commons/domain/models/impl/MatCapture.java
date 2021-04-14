@@ -5,6 +5,10 @@ import org.opencv.core.Mat;
 import com.zen.capture.commons.domain.models.ICapture;
 
 public class MatCapture implements ICapture<Mat> {
+
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
 	
 	private Mat image;
 	private long captureTime;

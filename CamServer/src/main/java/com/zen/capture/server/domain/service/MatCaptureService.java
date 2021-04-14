@@ -21,7 +21,7 @@ public class MatCaptureService extends ACaptureService<Mat,String> {
 
 	@Override
 	protected String getAsString(Mat image) {
-		return ImageUtils.getInstance().getImageAsString(ImageUtils.getInstance().mat2BufferedImage(image));
+		return ImageUtils.getInstance().getImageAsString(ImageUtils.getInstance().matToBufferedImage(image));
 	}
 
 }

@@ -18,6 +18,10 @@ public class BufferedCaptures extends ACaptures<VideoCapture, BufferedImage, Str
 	 */
 	private static final long serialVersionUID = 1L;
 
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+	
 	public BufferedCaptures(int index, int states) {
 		super(index, states);
 	}
