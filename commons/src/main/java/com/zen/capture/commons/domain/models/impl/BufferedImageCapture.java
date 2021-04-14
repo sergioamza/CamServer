@@ -6,6 +6,10 @@ import com.zen.capture.commons.domain.models.ICapture;
 
 public class BufferedImageCapture implements ICapture<BufferedImage> {
 
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+	
 	private BufferedImage image;
 	private long captureTime;
 

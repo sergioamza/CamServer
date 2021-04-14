@@ -15,6 +15,10 @@ public class MatCaptures extends ACaptures<VideoCapture, Mat, String> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+	
 	public MatCaptures(int index, int states) {
 		super(index, states);
 	}
@@ -30,7 +34,8 @@ public class MatCaptures extends ACaptures<VideoCapture, Mat, String> {
 
 	@Override
 	protected String fromTtoU(Mat image) {
-		return ImageUtils.getInstance().getImageAsString(ImageUtils.getInstance().mat2BufferedImage(image));
+		return (image != null && image.width() > 0 && image.height() > 0) ?  
+				ImageUtils.getInstance().getImageAsString(ImageUtils.getInstance().matToBufferedImage(image)) : null;
 	}
 
 	@Override

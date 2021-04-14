@@ -1,86 +1,54 @@
 package com.zen.capture.server.infraestructure.repository;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 
-import org.opencv.core.CvException;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import com.zen.capture.commons.domain.models.ICapture;
+import com.zen.capture.commons.domain.models.ACaptureRepository;
 import com.zen.capture.commons.domain.models.ICaptureDevice;
 import com.zen.capture.commons.domain.models.ICaptureRepository;
+import com.zen.capture.commons.domain.models.ICaptures;
 import com.zen.capture.commons.domain.models.impl.MatCaptures;
 import com.zen.capture.commons.domain.models.impl.MatOpencvCaptureDevice;
-import com.zen.capture.commons.domain.models.impl.StringCapture;
-import com.zen.capture.commons.utils.ImageUtils;
 import com.zen.capture.commons.utils.StringUtils;
 
 @Primary
 @Repository
-public class CaptureRepository<T> implements AutoCloseable, ICaptureRepository<Mat, String> {
+public class CaptureRepository<T> extends ACaptureRepository<VideoCapture, Mat, String> implements AutoCloseable, ICaptureRepository<Mat, String> {
 
 	private Logger logger = Logger.getLogger(CaptureRepository.class.getName());
 
-	private Map<Integer, MatCaptures> captures;
-
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+	
 	private Map<String, Integer> props = new HashMap<String, Integer>();
-
-	private final int STATES = 3;
-
-	private CaptureRepository() {
+	
+	public CaptureRepository()	{
+		super();
 		init();
 	}
-
-	public Optional<ICapture<String>> getCapture(int index) {
+	
+	public void updateCapture(int index) {
 		long now = System.currentTimeMillis();
-		try {
-			if (!captures.containsKey(index))
-				throw new NullPointerException("No such device");
-			if ((now - captures.get(index).getCapture().getCaptureTime()) >= 50
-					&& captures.get(index).getvCapture().isReady()) {
-				captures.get(index).setCapture(captures.get(index).getvCapture().getCapture());
-			}
-			if (captures.get(index).getCapture().getImage() == null) {
-				throw new CvException("Null image");
-			}
-		} catch (NullPointerException e) {
-			Image im = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
-			im.getGraphics().drawString(e.getMessage(), 0, 240);
-			ICapture<String> capture = new StringCapture();
-			capture.setCaptureTime(now);
-			capture.setImage(ImageUtils.getInstance().getImageAsString((BufferedImage) im));
-			return Optional.of(capture);
-		} catch (IndexOutOfBoundsException | CvException e) {
-			logger.warning("TimeElapsed: " + (now - captures.get(index).getCapture().getCaptureTime()));
-			logger.warning(e.getMessage());
-			logger.info("Intance [" + index + "] " + captures.get(index).getvCapture().hashCode());
-			Image im = new BufferedImage(640, 480, BufferedImage.TYPE_3BYTE_BGR);
-			im.getGraphics().drawString(e.getMessage(), 0, 240);
-			captures.get(index).getCapture().setImage(ImageUtils.getInstance().getImageAsString((BufferedImage) im));
+		if (captures.containsKey(index) && (now - captures.get(index).getCapture().getCaptureTime()) >= 100
+				&& captures.get(index).getvCapture().isReady()) {
+			captures.get(index).setCapture(captures.get(index).getvCapture().getCapture());
 		}
-		return Optional.of(captures.get(index).getCapture());
 	}
 
 	private void init() {
-		try {
-			nu.pattern.OpenCV.loadShared();
-			setProps();
-			discover();
-		} catch (CvException e) {
-			logger.severe(e.getMessage());
-		}
+		setProps();
 	}
 
 	@Override
@@ -89,44 +57,9 @@ public class CaptureRepository<T> implements AutoCloseable, ICaptureRepository<M
 			try {
 				cap.getvCapture().close();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warning(e.getMessage());
 			}
 		});
-	}
-
-	public int discover() {
-		Mat frame = new Mat();
-		if (captures != null && !captures.isEmpty()) {
-			captures.forEach((i, cap) -> {
-				try {
-					cap.getvCapture().close();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-		} else {
-			captures = new HashMap<>();
-		}
-
-		for (int i = 0; i < 30; i++) {
-			ICaptureDevice<VideoCapture, Mat> vCapture = new MatOpencvCaptureDevice(i);
-			if (vCapture.isOpen()) {
-				vCapture.getCaptureDevice().release();
-			}
-			if ((vCapture.getCaptureDevice().isOpened() || vCapture.getCaptureDevice().open(i))
-					&& vCapture.getCaptureDevice().read(frame) && frame.width() > 0 && frame.height() > 0) {
-				captures.put(i, new MatCaptures(vCapture, STATES));
-				logger.info("Cam " + i + " " + vCapture.getCaptureDevice().get(Videoio.CAP_PROP_FRAME_WIDTH) + "x"
-						+ vCapture.getCaptureDevice().get(Videoio.CAP_PROP_FRAME_HEIGHT) + "@"
-						+ vCapture.getCaptureDevice().get(Videoio.CAP_PROP_FPS));
-			} else {
-				vCapture.getCaptureDevice().release();
-				captures.remove(i);
-			}
-		}
-		return captures.size();
 	}
 
 	public Map<String, Object> getInfo(int index) {
@@ -165,7 +98,6 @@ public class CaptureRepository<T> implements AutoCloseable, ICaptureRepository<M
 					props.put(StringUtils.getInstance().snakeCaseToUpperCamelCase(x.getName()), x.getInt(x));
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					logger.info(e.getMessage());
-					e.printStackTrace();
 				}
 			});
 		} catch (Exception e) {
@@ -181,4 +113,16 @@ public class CaptureRepository<T> implements AutoCloseable, ICaptureRepository<M
 		});
 		return list;
 	}
+
+	@Override
+	protected ICaptures<VideoCapture, Mat, String> getNewCapturesInstance(ICaptureDevice<VideoCapture, Mat> vCapture,
+			int states) {
+		return new MatCaptures(vCapture, states);
+	}
+
+	@Override
+	protected ICaptureDevice<VideoCapture, Mat> getNewCaptureDeviceInstance(int id) {
+		return new MatOpencvCaptureDevice(id);
+	}
+
 }

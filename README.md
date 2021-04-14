@@ -1,30 +1,34 @@
 # Capture Server
 
-An idea for a custom CCTV and DVR Running into a Raspberry/Orange/Banana/Whatever.. Pi or another computing system, recycling old webcams.
+An idea for a custom CCTV and DVR Running into a Raspberry/Orange/Banana/Whatever.. Pi or another computing system, recycling old webcaptures.
 
-## Cam Server
+Another use could be some detection for a Computer vision application
 
-Scans and serves the image of each cam of the System
+## capture Server
+
+Scans and serves the image of each capture of the System
 
 ## Movement Detector
 
-Scans, process and server the cameras of remote systems.
+Scans, process and server the captureeras of remote systems.
 
 ### Endpoint
 
 `/`: `index.html` which is located in `src/resources/static` folder
 
-`/cam/list`: List of id of capture devices
+`/capture/list`: List of id of capture devices
 
-`/cam/info`: Info of all capture devices
+`/capture/info`: Info of all capture devices
 
-`/cam/count`: Count of capture devices detected
+`/capture/count`: Count of capture devices detected
 
-`/cam/{id}`: Base64 encoded image
+`/capture/{id}`: Base64 encoded image
 
-`/cam/{id}/info`: Camera info
+`/capture/{id}/info`: capture info
 
-`/cam/{id}/{prop}/{value}`: Set camera properties
+`/capture/{id}/diff`: differences between last and new capture
+
+`/capture/{id}/{prop}/{value}`: Set captureera properties
 
 ## Current work
 
@@ -32,7 +36,7 @@ Scans, process and server the cameras of remote systems.
 
 ## Future work
 
-- Connect to network cameras
+- Connect to network captureeras
 - Provide another module for motion detection, using OpenCV or other Images processing software
 - Provide face recognition using some Cloud service
 - Integrate other drivers like V4l

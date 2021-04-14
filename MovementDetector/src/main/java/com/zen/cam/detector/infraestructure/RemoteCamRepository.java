@@ -23,19 +23,19 @@ public class RemoteCamRepository implements ICaptureRepository<String, String> {
 
 	@Override
 	public Optional<ICapture<String>> getCapture(int index) {
-		StringCapture res = restTemplate.getForObject("http://localhost:8080/cam/" + index, StringCapture.class);
-		return Optional.of(res);
+		StringCapture res = restTemplate.getForObject("http://localhost:8080/capture/" + index, StringCapture.class);
+		return res != null ? Optional.of(res) : null;
 	}
 
 	public String getImageAsString(int index) {
-		String res = restTemplate.getForObject("http://localhost:8080/cam/" + index, String.class);
+		String res = restTemplate.getForObject("http://localhost:8080/capture/" + index, String.class);
 		logger.info(res);
 		return res;
 	}
 
 	@Override
 	public int discover() {
-		int res = restTemplate.getForObject("http://localhost:8080/cam/count/", Integer.class);
+		int res = restTemplate.getForObject("http://localhost:8080/capture/count/", Integer.class);
 		logger.finest("count: " + res);
 		return res;
 	}
@@ -43,21 +43,21 @@ public class RemoteCamRepository implements ICaptureRepository<String, String> {
 	@Override
 	public List<Integer> getCaptureList() {
 		@SuppressWarnings("unchecked")
-		List<Integer> res = restTemplate.getForObject("http://localhost:8080/cam/list", List.class);
+		List<Integer> res = restTemplate.getForObject("http://localhost:8080/capture/list", List.class);
 		return res;
 	}
 
 	@Override
 	public Map<String, Object> getInfo(int index) {
 		@SuppressWarnings("unchecked")
-		Map<String, Object> res = restTemplate.getForObject("http://localhost:8080/cam/" + index + "/info", Map.class);
+		Map<String, Object> res = restTemplate.getForObject("http://localhost:8080/capture/" + index + "/info", Map.class);
 		return res;
 	}
 
 	@Override
 	public Map<String, Map<String, Object>> getInfo() {
 		@SuppressWarnings("unchecked")
-		Map<String, Map<String, Object>> res = restTemplate.getForObject("http://localhost:8080/cam/info", Map.class);
+		Map<String, Map<String, Object>> res = restTemplate.getForObject("http://localhost:8080/capture/info", Map.class);
 		return res;
 	}
 
@@ -66,6 +66,18 @@ public class RemoteCamRepository implements ICaptureRepository<String, String> {
 		boolean res = restTemplate.getForObject("http://localhost:8080/cam/" + idx + "/" + prop + "/" + value,
 				Boolean.class);
 		return res;
+	}
+
+	@Override
+	public Optional<ICapture<String>> getCapture(int index, int state) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateCapture(int index) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
