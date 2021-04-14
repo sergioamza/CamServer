@@ -13,25 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zen.capture.commons.domain.models.ICapture;
 import com.zen.capture.commons.domain.models.ICaptureService;
-import com.zen.capture.server.domain.service.ImageProcessingService;
 
 @RestController
-@RequestMapping("capture")
-public class CaptureController {
+@RequestMapping("capture/mat")
+public class MatCaptureController {
 
 	@Autowired
-	private ICaptureService<Mat, String> captureService;
-	@Autowired
-	private ImageProcessingService imageProcessingService;
+	private ICaptureService<Mat,String> captureService;
 
 	@GetMapping(path = "{id}")
 	public ICapture<String> getCamImage(@PathVariable("id") int id) {
 		return captureService.getCapture(id);
-	}
-
-	@GetMapping(path = "{id}/diff")
-	public ICapture<String> getDiffImage(@PathVariable("id") int id) {
-		return imageProcessingService.getDifferentialMat(id, 0, 1);
 	}
 
 	@GetMapping(path = "{id}/info", produces = MediaType.APPLICATION_JSON_VALUE)

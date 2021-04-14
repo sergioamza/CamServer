@@ -9,39 +9,46 @@ import java.util.logging.Logger;
 
 import org.opencv.core.CvException;
 
-public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICaptureRepository<T,U> {
+public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICaptureRepository<T, U> {
 
 	private Logger logger = Logger.getLogger(ACaptureRepository.class.getName());
 
-	private Map<Integer, ICaptures<D, T, U>> captures;
+	{
+		nu.pattern.OpenCV.loadShared();
+	}
+
+	protected Map<Integer, ICaptures<D, T, U>> captures = new HashMap<Integer, ICaptures<D, T, U>>();
 
 	private final int STATES = 3;
 
-	private ACaptureRepository() {
+	protected ACaptureRepository() {
 		init();
 	}
 
+	@Override
 	public Optional<ICapture<U>> getCapture(int index) {
+		updateCapture(index);
+		return (captures != null && captures.containsKey(index)) ? Optional.of(captures.get(index).getCapture()) : Optional.empty();
+	}
+
+	@Override
+	public Optional<ICapture<T>> getCapture(int index, int state) {
+		updateCapture(index);
+		return (captures != null && captures.containsKey(index)) ? Optional.of(captures.get(index).getCapture(state))
+				: Optional.empty();
+	}
+
+	@Override
+	public void updateCapture(int index) {
 		long now = System.currentTimeMillis();
-		try {
-			if (!captures.containsKey(index))
-				throw new NullPointerException("No such device");
-			if ((now - captures.get(index).getCapture().getCaptureTime()) >= 50
-					&& captures.get(index).getvCapture().isReady()) {
-				captures.get(index).setCapture(captures.get(index).getvCapture().getCapture());
-			}
-			if (captures.get(index).getCapture().getImage() == null) {
-				throw new CvException("Null image");
-			}
-		} catch (NullPointerException e) {
-		} catch (IndexOutOfBoundsException | CvException e) {
+		if (captures != null && (now - captures.get(index).getCapture().getCaptureTime()) >= 50
+				&& captures.get(index).getvCapture().isReady()) {
+			captures.get(index).setCapture(captures.get(index).getvCapture().getCapture());
 		}
-		return Optional.of(captures.get(index).getCapture());
 	}
 
 	private void init() {
 		try {
-			nu.pattern.OpenCV.loadShared();
 			discover();
 		} catch (CvException e) {
 			logger.severe(e.getMessage());
@@ -54,8 +61,7 @@ public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICap
 			try {
 				cap.getvCapture().close();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warning(e.getMessage());
 			}
 		});
 	}
@@ -64,10 +70,9 @@ public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICap
 		if (captures != null && !captures.isEmpty()) {
 			captures.forEach((i, cap) -> {
 				try {
-					cap.getvCapture().close();
+					if(cap.getvCapture().isOpen()) cap.getvCapture().close();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warning(e.getMessage());
 				}
 			});
 		} else {
@@ -83,7 +88,7 @@ public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICap
 				try {
 					vCapture.close();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.warning(e.getMessage());
 				}
 				captures.remove(i);
 			}

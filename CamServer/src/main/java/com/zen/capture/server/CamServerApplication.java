@@ -8,6 +8,7 @@ public class CamServerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CamServerApplication.class, args);
+		nu.pattern.OpenCV.loadShared();		
 	}
 
 }
