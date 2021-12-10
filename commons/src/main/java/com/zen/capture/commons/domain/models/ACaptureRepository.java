@@ -19,7 +19,7 @@ public abstract class ACaptureRepository<D, T, U> implements AutoCloseable, ICap
 
 	protected Map<Integer, ICaptures<D, T, U>> captures = new HashMap<Integer, ICaptures<D, T, U>>();
 
-	private final int STATES = 3;
+	private final int STATES = 2;
 
 	protected ACaptureRepository() {
 		init();

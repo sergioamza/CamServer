@@ -1,0 +1,61 @@
+* {
+	color: #fffc;
+}
+
+body	{	
+	background-color: black;
+}
+
+img {
+	width: calc( 100% - 30px );
+	max-width: 960px;
+}
+
+input {
+	clear: both;
+	width: 20px;
+	height:10px;
+	margin:0;
+	padding:0;
+	padding-left: calc( 50%- 10px);
+	padding-right: calc( 50%- 10px);
+	background-color: #0009
+}
+
+.img-container	{
+	display: inline-block;
+}
+
+.img	{
+	display: inline-block;
+}
+
+.property	{
+	width: 100px;
+	display: flex;
+	font-family: monospace;
+	border: 2px;text-shadow: 2px 0 0 #0009, -2px 0 0 #0009, 0 2px 0 #0009, 0 -2px 0 #0009, 1px 1px #0009, -1px -1px 0 #0009, 1px -1px 0 #0009, -1px 1px 0 #0009;
+}
+
+.tag	{
+	flex-shrink: 0;
+	width: 200pt;
+	display: inline;
+}
+
+.value	{
+	width: 75pt;
+}
+
+.info	{
+	position: relative;
+	top: 0;
+	height: 480px;
+	width: 25px;
+	overflow: hidden;
+	display: inline-block;
+}
+
+.info:hover {
+	overflow: visible;
+}

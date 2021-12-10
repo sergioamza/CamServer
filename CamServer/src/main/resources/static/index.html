@@ -3,69 +3,14 @@
 
 <head>
 	<meta charset="ISO-8859-1">
-	<title>Insert title here</title>
-	<style type="text/css">
-		img {
-			width: 100%;
-			max-width: 960px;
-		}
-	</style>
+	<title>CamServer</title>
+	<link type="text/css" rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-	<script type="text/javascript">
-		let list = [];
-
-
-		fetch(`./capture/list`)
-			.then(x => x.text())
-			.then(data => {
-				list = JSON.parse(data);
-				for (let i in list) {
-					let img = document.createElement("img");
-					img.id = `img${list[i]}`;
-					document.body.appendChild(img);
-					let imgdiff = document.createElement("img");
-					imgdiff.id = `img${list[i]}diff`;
-					document.body.appendChild(imgdiff);
-				}
-				for (let i in list) {
-					update(list[i]);
-					updatediff(list[i]);
-				}
-			});
-
-		function update(i) {
-			fetch(`./capture/${i}`)
-				.then(x => x.text())
-				.then(data => {
-					updateImgElement(`img${i}`, data);
-					setTimeout(function () { update(i); }, 100);
-				}).catch(r => {
-					setTimeout(function () { update(i); }, 10000);
-				});
-		}
-		
-		function updatediff(i) {
-			fetch(`./capture/${i}/diff`)
-			.then(x => x.text())
-			.then(data => {
-				updateImgElement(`img${i}diff`, data);
-				setTimeout(function () { updatediff(i); }, 100);
-			}).catch(r => {
-				setTimeout(function () { updatediff(i); }, 10000);
-			});
-		}
-		
-		function updateImgElement(elementId, strData)	{
-			let base64 = JSON.parse(strData).image;
-			if (base64 != null) {
-				let buffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-				let blob = new Blob([buffer], { type: "image/jpg" });
-				let url = URL.createObjectURL(blob);
-				document.getElementById(elementId).src = url;
-			}
-		}
+	<input id="diff" type="checkbox"/><br/>
+	
+	<script type="text/javascript" src="scripts.js">
 	</script>
 </body>
 
