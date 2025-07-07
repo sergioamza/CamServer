@@ -70,14 +70,13 @@ public class RemoteCamRepository implements ICaptureRepository<String, String> {
 
 	@Override
 	public Optional<ICapture<String>> getCapture(int index, int state) {
-		// TODO Auto-generated method stub
-		return null;
+		StringCapture res = restTemplate.getForObject("http://localhost:8080/capture/" + index + "/" + state, StringCapture.class);
+		return res != null ? Optional.of(res) : Optional.empty();
 	}
 
 	@Override
 	public void updateCapture(int index) {
-		// TODO Auto-generated method stub
-		
+		restTemplate.postForObject("http://localhost:8080/capture/" + index + "/update", null, Void.class);
 	}
 
 }
